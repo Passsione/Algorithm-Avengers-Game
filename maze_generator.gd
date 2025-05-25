@@ -336,7 +336,7 @@ extends Node2D
 
 # Duration for the warning before a wall appears
 @export var wall_warning_duration: float = 2.0 # seconds
-@export var wall_modification_interval: float = 3.0 # seconds between modifications
+@export var wall_modification_interval: float = 6.0 # seconds between modifications
 
 var maze_matrix: Array = []
 var entrance_matrix_pos: Vector2i
