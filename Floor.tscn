@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bnfduda0y3a1b"]
+
+[node name="floor" type="Node2D"]
+scale = Vector2(3.25, 3)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
