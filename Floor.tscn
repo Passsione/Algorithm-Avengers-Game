@@ -1,6 +1,10 @@
-[gd_scene format=3 uid="uid://bnfduda0y3a1b"]
+[gd_scene load_steps=2 format=3 uid="uid://bnfduda0y3a1b"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_spmh5"]
+light_mode = 2
 
 [node name="floor" type="Node2D"]
+material = SubResource("CanvasItemMaterial_spmh5")
 scale = Vector2(3.25, 3)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

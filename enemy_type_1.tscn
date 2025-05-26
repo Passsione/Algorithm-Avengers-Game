@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3 uid="uid://bqaav4fhsqsqu"]
+
+[ext_resource type="Script" uid="uid://ls060kwsysbt" path="res://enemy_type_1.gd" id="1_2ht8i"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u4xsa"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_qf0cy"]
+light_mode = 2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2ht8i"]
+
+[sub_resource type="Gradient" id="Gradient_2ht8i"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_qf0cy"]
+gradient = SubResource("Gradient_2ht8i")
+
+[node name="EnemyType1" type="CharacterBody2D"]
+script = ExtResource("1_2ht8i")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.64, 1)
+shape = SubResource("CapsuleShape2D_u4xsa")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+material = SubResource("CanvasItemMaterial_qf0cy")
+position = Vector2(-0.22, 0)
+scale = Vector2(19.56, 15.04)
+mesh = SubResource("CapsuleMesh_2ht8i")
+
+[node name="enemy_light" type="PointLight2D" parent="."]
+texture = SubResource("GradientTexture2D_qf0cy")

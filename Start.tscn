@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxrktouj5i8l6"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_bupin"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+scale = Vector2(15, 15)
+mesh = SubResource("SphereMesh_bupin")

@@ -1,12 +1,38 @@
-[gd_scene load_steps=3 format=3 uid="uid://bgoybppx127fa"]
+[gd_scene load_steps=9 format=3 uid="uid://bgoybppx127fa"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ywhhs"]
+light_mode = 1
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_fgjl5"]
+cull_mode = 1
+polygon = PackedVector2Array(-0.5, -0.516936, -0.5, 0.516936, -0.175, 0.443088, 0.525, 0.516936, 0.525, 0.147696, 0.525, -0.516936, 0.025, -0.516936, -0.2, -0.418472)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fgjl5"]
+light_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fgjl5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oh6kn"]
+lightmap_size_hint = Vector2i(-1, 0)
+material = SubResource("StandardMaterial3D_fgjl5")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xxgf6"]
 
-[node name="wall" type="StaticBody2D"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rytl6"]
+light_mode = 2
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_fgjl5"]
+
+[node name="wall" type="StaticBody2D" groups=["proximity_light_wall"]]
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+modulate = Color(0.688905, 0.2511, 0.81, 1)
+material = SubResource("CanvasItemMaterial_ywhhs")
+scale = Vector2(40, 40.624)
+occluder = SubResource("OccluderPolygon2D_fgjl5")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+material = SubResource("CanvasItemMaterial_fgjl5")
 scale = Vector2(40, 40.624)
 mesh = SubResource("BoxMesh_oh6kn")
 
@@ -14,4 +40,9 @@ mesh = SubResource("BoxMesh_oh6kn")
 scale = Vector2(2, 2.04)
 shape = SubResource("RectangleShape2D_xxgf6")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="WallSprite" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_rytl6")
+texture = SubResource("CompressedTexture2D_fgjl5")
+
+[node name="ProximityPointLight" type="DirectionalLight2D" parent="."]
+energy = 0.0

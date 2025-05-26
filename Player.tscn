@@ -1,23 +1,42 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjm07luti2a02"]
+[gd_scene load_steps=8 format=3 uid="uid://cjm07luti2a02"]
 
 [ext_resource type="Script" uid="uid://dcrmaip0cwckr" path="res://player.gd" id="1_xhfnw"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0rwas"]
-radius = 2.0
+radius = 1.92308
+height = 29.1667
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_0rwas"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xhfnw"]
+light_mode = 2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_xhfnw"]
+
+[sub_resource type="Gradient" id="Gradient_xhfnw"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_kpjcp"]
+gradient = SubResource("Gradient_xhfnw")
+
+[sub_resource type="GDScript" id="GDScript_kne1u"]
 
 [node name="Player" type="CharacterBody2D"]
 scale = Vector2(0.479999, 0.479999)
 script = ExtResource("1_xhfnw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(5.41667, 1)
+scale = Vector2(5.5, 1)
 shape = SubResource("CapsuleShape2D_0rwas")
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
-scale = Vector2(20.8, 15.8)
-mesh = SubResource("CapsuleMesh_0rwas")
+material = SubResource("CanvasItemMaterial_xhfnw")
+position = Vector2(0, 3.15905e-06)
+scale = Vector2(20.8, 14.5834)
+mesh = SubResource("CapsuleMesh_xhfnw")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(5, 5)
+scale = Vector2(8.75002, 1)
+zoom = Vector2(1.5, 1.5)
+
+[node name="player_light" type="PointLight2D" parent="." groups=["player"]]
+scale = Vector2(4, 4)
+texture = SubResource("GradientTexture2D_kpjcp")
+script = SubResource("GDScript_kne1u")

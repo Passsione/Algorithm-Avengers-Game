@@ -1,9 +1,30 @@
-[gd_scene load_steps=3 format=3 uid="uid://sni7ulv3ywy5"]
+[gd_scene load_steps=10 format=3 uid="uid://sni7ulv3ywy5"]
 
 [ext_resource type="Script" uid="uid://o6tak3oqp5ge" path="res://world.gd" id="1_fj7yv"]
 [ext_resource type="PackedScene" uid="uid://61lwvtlhepve" path="res://maze_generator.tscn" id="2_aqk2v"]
+[ext_resource type="PackedScene" uid="uid://bgoybppx127fa" path="res://Wall.tscn" id="3_dwbse"]
+[ext_resource type="PackedScene" uid="uid://bqaav4fhsqsqu" path="res://enemy_type_1.tscn" id="3_tlwt5"]
+[ext_resource type="PackedScene" uid="uid://bnfduda0y3a1b" path="res://Floor.tscn" id="4_pkg7o"]
+[ext_resource type="PackedScene" uid="uid://cjm07luti2a02" path="res://Player.tscn" id="5_gbfbk"]
+[ext_resource type="PackedScene" uid="uid://bxrktouj5i8l6" path="res://Start.tscn" id="7_gbfbk"]
+[ext_resource type="PackedScene" uid="uid://dk2bmjre813r2" path="res://End.tscn" id="8_ioo17"]
+
+[sub_resource type="Environment" id="Environment_fj7yv"]
+background_mode = 3
+background_energy_multiplier = 0.0
+ambient_light_source = 2
+ambient_light_energy = 0.0
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fj7yv")
 
 [node name="MazeGenerator" parent="." instance=ExtResource("2_aqk2v")]
+wall_scene = ExtResource("3_dwbse")
+floor_scene = ExtResource("4_pkg7o")
+player_scene = ExtResource("5_gbfbk")
+enemy_scene = ExtResource("3_tlwt5")
+start_scene = ExtResource("7_gbfbk")
+end_scene = ExtResource("8_ioo17")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_fj7yv")

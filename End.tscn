@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dk2bmjre813r2"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_hxor2"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+scale = Vector2(15, 15)
+mesh = SubResource("PrismMesh_hxor2")
