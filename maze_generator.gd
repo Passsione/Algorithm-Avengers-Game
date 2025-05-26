@@ -26,7 +26,10 @@ extends Node2D
 
 # Proximity Activation Settings
 @export_category("Proximity Activation")
-@export var proximity_activation_distance: float = 200.0 # Distance to enable/disable lights and enemies
+@export var proximity_activation_distance: float = 200.0 # Distance to enable/disable lights
+
+@export_category("Enemy View Distance")
+@export var proximity_enemy_1_distance: float = proximity_activation_distance - 50 # Distance to see enemy 
 
 var maze_matrix: Array = []
 var entrance_matrix_pos: Vector2i
@@ -215,7 +218,7 @@ func _process(delta: float):
 		if light.enabled != light_should_be_enabled:
 			light.enabled = light_should_be_enabled
 			if light.enabled:
-				light.energy = distance_to_light / ( proximity_activation_distance * proximity_activation_distance)
+				light.energy = distance_to_light / (2 * proximity_activation_distance * proximity_activation_distance)
 			else:
 				light.energy = 0
 			light.set_process(light_should_be_enabled) 
@@ -234,10 +237,10 @@ func _process(delta: float):
 			j -= 1; continue
 
 		var distance_to_enemy = player_pos.distance_to(enemy.global_position)
-		var enemy_should_be_active = (distance_to_enemy <= proximity_activation_distance) and enemy.is_enemy_moving()
+		var enemy_should_be_active = (distance_to_enemy <= proximity_enemy_1_distance) and enemy.is_enemy_moving()
 		
-		if enemy.visible != enemy_should_be_active: # Check against current visibility
-			enemy.visible = enemy_should_be_active
+		if enemy_should_be_active: # Check against current visibility
+			enemy.visible = true
 			var enemy_light: Light2D = enemy.get_node_or_null("enemy_light")
 			enemy_light.energy = distance_to_enemy / ( proximity_activation_distance *  proximity_activation_distance)
 			enemy_light.color = Color(2.3, 91, 1, enemy_light.energy)
@@ -246,6 +249,9 @@ func _process(delta: float):
 			# if enemy_should_be_active and enemy.has_method("activate"): enemy.activate()
 			# if not enemy_should_be_active and enemy.has_method("deactivate"): enemy.deactivate()
 			# print("Enemy %s toggled to active: %s" % [enemy.name, enemy_should_be_active])
+		else:
+			enemy.visible = false
+			
 		j -= 1
 
 # --- Dynamic Wall Modification ---

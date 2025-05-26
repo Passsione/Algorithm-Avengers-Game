@@ -7,4 +7,7 @@ light_mode = 2
 material = SubResource("CanvasItemMaterial_spmh5")
 scale = Vector2(3.25, 3)
 
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+scale = Vector2(4, 4)
+
 [node name="Sprite2D" type="Sprite2D" parent="."]

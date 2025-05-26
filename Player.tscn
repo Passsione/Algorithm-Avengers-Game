@@ -38,5 +38,6 @@ zoom = Vector2(1.5, 1.5)
 
 [node name="player_light" type="PointLight2D" parent="." groups=["player"]]
 scale = Vector2(4, 4)
+color = Color(1, 0.33, 0.33, 1)
 texture = SubResource("GradientTexture2D_kpjcp")
 script = SubResource("GDScript_kne1u")
