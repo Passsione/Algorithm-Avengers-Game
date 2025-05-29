@@ -3,7 +3,7 @@
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_spmh5"]
 light_mode = 2
 
-[node name="floor" type="Node2D"]
+[node name="floor" type="Node2D" groups=["floor_tile"]]
 material = SubResource("CanvasItemMaterial_spmh5")
 scale = Vector2(3.25, 3)
 
@@ -11,3 +11,5 @@ scale = Vector2(3.25, 3)
 scale = Vector2(4, 4)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]

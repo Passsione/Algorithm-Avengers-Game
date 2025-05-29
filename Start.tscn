@@ -2,7 +2,7 @@
 
 [sub_resource type="SphereMesh" id="SphereMesh_bupin"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D" type="Node2D" groups=["start_tile"]]
 
 [node name="MeshInstance2D" type="MeshInstance2D" parent="."]
 scale = Vector2(15, 15)
