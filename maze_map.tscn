@@ -1,0 +1,347 @@
+[gd_scene load_steps=18 format=3 uid="uid://dh6tibfel6npy"]
+
+[ext_resource type="Script" uid="uid://dfo8lbf3ibj5i" path="res://block_maze.gd" id="1_h5yxo"]
+[ext_resource type="PackedScene" uid="uid://bv6pwr1dcsjud" path="res://relic.tscn" id="2_a2ajr"]
+[ext_resource type="Texture2D" uid="uid://bpbcgpd1m6e3x" path="res://Terrain (16x16).png" id="2_f0wui"]
+[ext_resource type="PackedScene" uid="uid://c73eiaij08oy8" path="res://scenes/player.tscn" id="3_f0wui"]
+[ext_resource type="Script" uid="uid://v5nr8im76cp3" path="res://scenes/player.gd" id="4_rtvi0"]
+[ext_resource type="AudioStream" uid="uid://d0bl7x0p6o872" path="res://1-background-music-101soundboards.mp3" id="5_kqjnm"]
+[ext_resource type="Script" uid="uid://ba8c20fd0e5bf" path="res://enemy.gd" id="8_5h2xj"]
+[ext_resource type="Texture2D" uid="uid://dmg8penny8u40" path="res://Player-Sprite.png" id="9_4ct2u"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rtvi0"]
+texture = ExtResource("2_f0wui")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+8:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+9:0/0 = 0
+10:0/0 = 0
+12:0/0 = 0
+13:0/0 = 0
+14:0/0 = 0
+15:0/0 = 0
+17:0/0 = 0
+18:0/0 = 0
+19:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+9:1/0 = 0
+10:1/0 = 0
+10:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+12:1/0 = 0
+13:1/0 = 0
+14:1/0 = 0
+15:1/0 = 0
+17:1/0 = 0
+18:1/0 = 0
+19:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+13:2/0 = 0
+14:2/0 = 0
+15:2/0 = 0
+17:2/0 = 0
+18:2/0 = 0
+19:2/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+9:4/0 = 0
+10:4/0 = 0
+12:4/0 = 0
+13:4/0 = 0
+14:4/0 = 0
+15:4/0 = 0
+17:4/0 = 0
+18:4/0 = 0
+19:4/0 = 0
+20:4/0 = 0
+21:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+9:5/0 = 0
+10:5/0 = 0
+12:5/0 = 0
+13:5/0 = 0
+14:5/0 = 0
+15:5/0 = 0
+17:5/0 = 0
+18:5/0 = 0
+19:5/0 = 0
+20:5/0 = 0
+21:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+13:6/0 = 0
+14:6/0 = 0
+15:6/0 = 0
+17:6/0 = 0
+18:6/0 = 0
+19:6/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+4:8/0 = 0
+6:8/0 = 0
+7:8/0 = 0
+8:8/0 = 0
+9:8/0 = 0
+10:8/0 = 0
+12:8/0 = 0
+13:8/0 = 0
+14:8/0 = 0
+15:8/0 = 0
+17:8/0 = 0
+18:8/0 = 0
+19:8/0 = 0
+20:8/0 = 0
+0:9/0 = 0
+1:9/0 = 0
+2:9/0 = 0
+3:9/0 = 0
+4:9/0 = 0
+6:9/0 = 0
+7:9/0 = 0
+8:9/0 = 0
+9:9/0 = 0
+10:9/0 = 0
+12:9/0 = 0
+13:9/0 = 0
+14:9/0 = 0
+15:9/0 = 0
+17:9/0 = 0
+18:9/0 = 0
+19:9/0 = 0
+20:9/0 = 0
+0:10/0 = 0
+1:10/0 = 0
+2:10/0 = 0
+6:10/0 = 0
+7:10/0 = 0
+8:10/0 = 0
+13:10/0 = 0
+14:10/0 = 0
+15:10/0 = 0
+18:10/0 = 0
+19:10/0 = 0
+20:10/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_kqjnm"]
+physics_layer_0/collision_layer = 1
+sources/1 = SubResource("TileSetAtlasSource_rtvi0")
+
+[sub_resource type="Animation" id="Animation_8ill7"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_t10vr"]
+resource_name = "walk_down"
+length = 0.5
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_1lflc"]
+resource_name = "walk_left"
+length = 0.5
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_ftgvq"]
+resource_name = "walk_right"
+length = 0.5
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [12, 13, 14, 15]
+}
+
+[sub_resource type="Animation" id="Animation_sdg5g"]
+resource_name = "walk_up"
+length = 0.5
+loop_mode = 1
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_77l8s"]
+_data = {
+&"RESET": SubResource("Animation_8ill7"),
+&"walk_down": SubResource("Animation_t10vr"),
+&"walk_left": SubResource("Animation_1lflc"),
+&"walk_right": SubResource("Animation_ftgvq"),
+&"walk_up": SubResource("Animation_sdg5g")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5h2xj"]
+height = 26.6667
+
+[node name="MazeGame" type="Node2D" groups=["Root"]]
+script = ExtResource("1_h5yxo")
+relicScene = ExtResource("2_a2ajr")
+
+[node name="TileMap" type="TileMap" parent="."]
+texture_filter = 1
+tile_set = SubResource("TileSet_kqjnm")
+format = 2
+
+[node name="Area2D" type="Area2D" parent="TileMap"]
+
+[node name="Sprite2D" type="Sprite2D" parent="TileMap"]
+
+[node name="Player" parent="." groups=["Player"] instance=ExtResource("3_f0wui")]
+position = Vector2(265, 27)
+scale = Vector2(0.966547, 0.978737)
+script = ExtResource("4_rtvi0")
+
+[node name="Camera2D" type="Camera2D" parent="Player" groups=["camera"]]
+position = Vector2(232, 24)
+zoom = Vector2(3, 3)
+position_smoothing_enabled = true
+
+[node name="Control" type="Control" parent="Player/Camera2D"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -29.0
+offset_top = -106.0
+offset_right = 21.0
+offset_bottom = -66.0
+grow_horizontal = 2
+scale = Vector2(0.4, 0.4)
+
+[node name="Pause" type="Button" parent="Player/Camera2D/Control"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Pause"
+
+[node name="Quit" type="Button" parent="Player/Camera2D/Control"]
+visible = false
+layout_mode = 0
+offset_left = 77.0551
+offset_top = 0.655016
+offset_right = 119.055
+offset_bottom = 31.655
+text = "Quit
+"
+
+[node name="PointLight2D" type="PointLight2D" parent="Player"]
+
+[node name="Label" type="Label" parent="Player"]
+offset_left = 309.0
+offset_top = 76.0
+offset_right = 349.0
+offset_bottom = 99.0
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_kqjnm")
+volume_db = -4.953
+autoplay = true
+
+[node name="Enemy" type="CharacterBody2D" parent="."]
+position = Vector2(575, 52)
+scale = Vector2(0.6, 0.6)
+script = ExtResource("8_5h2xj")
+
+[node name="Sprite2D" type="Sprite2D" parent="Enemy"]
+texture = ExtResource("9_4ct2u")
+hframes = 4
+vframes = 4
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Enemy"]
+libraries = {
+&"": SubResource("AnimationLibrary_77l8s")
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy"]
+shape = SubResource("CapsuleShape2D_5h2xj")
+
+[connection signal="pressed" from="Player/Camera2D/Control/Pause" to="." method="_on_pause_pressed"]
+[connection signal="pressed" from="Player/Camera2D/Control/Quit" to="." method="_on_quit_pressed"]

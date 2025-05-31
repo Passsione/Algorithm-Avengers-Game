@@ -14,7 +14,7 @@ extends Node2D
 @export var cell_size: Vector2 = Vector2(40, 40)
 
 # Maze dimensions
-@export var maze_width: int = 7
+@export var maze_width: int = 11
 @export var maze_height: int = 7
 
 # Offset
@@ -31,13 +31,18 @@ extends Node2D
 @export var proximity_enemy_activation_distance: float = 150.0 # For enemies
 @export_flags_2d_physics var wall_occlusion_layer: int = 1 # Physics layer for walls that block "hearing"
 
-
+#$enemy_audio
 var maze_matrix: Array = []
 var entrance_matrix_pos: Vector2i # Will be cell type 3 (start)
 var exit_matrix_pos: Vector2i   # Will be cell type 2 (end)
 var player_node: Node2D = null 
+var audio_stream : AudioStreamPlayer2D = null
+
 
 var nav_region: NavigationRegion2D = null # For navigation mesh
+var _is_baking_navmesh: bool = false
+var _pending_nav_bake_request: bool = false
+
 
 # Store data for proximity lights: [{light_node: Light2D, wall_node: Node2D}]
 var proximity_lights_data: Array = []
@@ -160,95 +165,134 @@ func _setup_navigation_region():
 		nav_parent.call_deferred("add_child", nav_region)
 		# Connect to tree_entered to configure it once it's in the tree
 		if not nav_region.is_connected("tree_entered", Callable(self, "_on_nav_region_tree_entered")):
-			nav_region.tree_entered.connect(Callable(self, "_on_nav_region_tree_entered").bind(true)) # Bind true for initial bake
+			nav_region.tree_entered.connect(Callable(self, "_on_nav_region_tree_entered"))
 		print_debug("Scheduled NavigationRegion2D to be added.")
 	
 	if is_instance_valid(nav_region) and nav_region.is_inside_tree():
 		# If already in tree (e.g. it existed), configure and bake immediately.
-		_on_nav_region_tree_entered(true)
+		_on_nav_region_tree_entered()
 
-
-func _on_nav_region_tree_entered(is_initial_setup: bool = false):
+func _on_nav_region_tree_entered():
 	if not is_instance_valid(nav_region):
 		printerr("_on_nav_region_tree_entered: nav_region is not valid!")
 		return
-	
-	print_debug("NavRegion '%s' entered tree. Setting global position and navigation_layers." % nav_region.name)
-	nav_region.global_position = Vector2.ZERO # Ensure it's at origin for global coord outlines
-	nav_region.navigation_layers = 1
-	
-	# Perform initial bake if this flag is set (usually from _ready path)
-	if is_initial_setup:
-		print_debug("Performing initial bake for NavRegion from tree_entered.")
-		_generate_and_bake_navigation_polygon_impl()
 
-func _generate_and_bake_navigation_polygon_impl(): 
-	if not is_instance_valid(nav_region) or not nav_region.is_inside_tree():
-		printerr("Cannot generate navigation polygon: NavigationRegion2D is not valid or not in tree.")
-		if not get_tree().has_meta("__nav_bake_deferred_retry"): 
-			get_tree().set_meta("__nav_bake_deferred_retry", true)
-			call_deferred("_generate_and_bake_navigation_polygon_impl")
-			print_debug("Deferred nav bake due to nav_region not ready.")
-		else:
-			get_tree().remove_meta("__nav_bake_deferred_retry") 
+	print_debug("NavRegion '%s' entered tree. Setting global position and navigation_layers." % nav_region.name)
+	nav_region.global_position = Vector2.ZERO
+	nav_region.navigation_layers = 1
+
+func request_nav_bake():
+	if not is_instance_valid(nav_region):
+		printerr("Request Nav Bake: NavRegion is not valid. Setup might be needed.")
+		# Consider calling _setup_navigation_region here if it can be safely re-run,
+		# then deferring the request_nav_bake again.
+		return
+
+	if not nav_region.is_inside_tree():
+		printerr("Request Nav Bake: NavRegion not in tree. Deferring request.")
+		# This self-deferral can help wait for nav_region to enter the tree
+		# if _setup_navigation_region added it deferred.
+		call_deferred("request_nav_bake")
+		return
+
+	if _is_baking_navmesh:
+		_pending_nav_bake_request = true
+		print_debug("Navmesh bake already in progress. Request queued.")
 		return
 	
-	if get_tree().has_meta("__nav_bake_deferred_retry"): 
-		get_tree().remove_meta("__nav_bake_deferred_retry")
+	# If not baking and no pending request to consume, proceed to bake
+	_generate_and_bake_navigation_polygon_impl()
 
-	var new_nav_poly_resource = NavigationPolygon.new() 
+func _generate_and_bake_navigation_polygon_impl():
+	# This function now assumes nav_region is valid and in tree,
+	# as request_nav_bake should handle that.
+
+	if _is_baking_navmesh: # Should ideally not be hit if request_nav_bake is the only entry point
+		printerr("Error: Concurrent call to _generate_and_bake_navigation_polygon_impl. This shouldn't happen.")
+		return
+
+	_is_baking_navmesh = true
+	_pending_nav_bake_request = false # Consume the current request to bake
+
+	# Configure NavRegion properties here, just before generating outlines for this specific bake
+	# This ensures they are set correctly if nav_region was just added to tree.
+	if is_instance_valid(nav_region) and nav_region.is_inside_tree():
+		nav_region.global_position = Vector2.ZERO
+		nav_region.navigation_layers = 1
+	else:
+		printerr("Cannot bake: NavRegion became invalid or left tree before bake implementation.")
+		_is_baking_navmesh = false
+		if _pending_nav_bake_request: call_deferred("request_nav_bake") # Retry pending if any
+		return
+
+	var temp_nav_poly_resource = NavigationPolygon.new() # Bake into a temporary resource
 	var source_geometry_data = NavigationMeshSourceGeometryData2D.new()
-	
-	var walkable_outlines_collection = [] 
+	var walkable_outlines_collection = []
 
+	# --- Populate walkable_outlines_collection (your existing logic) ---
 	for y_idx in range(maze_matrix.size()):
 		for x_idx in range(maze_matrix[y_idx].size()):
 			var cell_val = maze_matrix[y_idx][x_idx]
-			if cell_val == 0 or cell_val == 2 or cell_val == 3: 
+			if cell_val == 0 or cell_val == 2 or cell_val == 3:
 				var cell_rect_vertices = PackedVector2Array()
 				var r_pos_x = x_idx * cell_size.x + maze_offset.x
 				var r_pos_y = y_idx * cell_size.y + maze_offset.y
-				
 				cell_rect_vertices.append(Vector2(r_pos_x, r_pos_y))
 				cell_rect_vertices.append(Vector2(r_pos_x + cell_size.x, r_pos_y))
 				cell_rect_vertices.append(Vector2(r_pos_x + cell_size.x, r_pos_y + cell_size.y))
 				cell_rect_vertices.append(Vector2(r_pos_x, r_pos_y + cell_size.y))
 				walkable_outlines_collection.append(cell_rect_vertices)
-	
+	# --- End of outline population ---
+
 	if not walkable_outlines_collection.is_empty():
+		print_debug("Initiating navigation bake with %d outlines into temp polygon %s." % [walkable_outlines_collection.size(), temp_nav_poly_resource])
 		for outline in walkable_outlines_collection:
 			source_geometry_data.add_traversable_outline(outline)
 		
-		var nav_poly_rid = new_nav_poly_resource.get_rid() 
-
-		NavigationServer2D.parse_source_geometry_data(nav_poly_rid, source_geometry_data, nav_region)
-		# MODIFIED: Added callback for bake_from_source_geometry_data
-		NavigationServer2D.bake_from_source_geometry_data(nav_poly_rid, Callable(self, "_on_navigation_bake_finished")) 
-
-		# The result of baking is asynchronous, so we check in the callback.
-		# We assign the polygon resource to the region here, and the server updates it.
-		nav_region.navigation_polygon = new_nav_poly_resource 
-		print_debug("Navigation polygon baking initiated with %d outlines." % walkable_outlines_collection.size())
+		NavigationServer2D.parse_source_geometry_data(temp_nav_poly_resource, source_geometry_data, nav_region)
+		NavigationServer2D.bake_from_source_geometry_data(temp_nav_poly_resource, source_geometry_data, Callable(self, "_on_navigation_bake_finished").bind(temp_nav_poly_resource))
+		# DO NOT assign temp_nav_poly_resource to nav_region.navigation_polygon here yet.
 	else:
 		printerr("No walkable cells found to generate navigation polygon outlines.")
-		nav_region.navigation_polygon = null
+		if is_instance_valid(nav_region):
+			nav_region.navigation_polygon = null # Clear existing if no outlines
+		_is_baking_navmesh = false # Reset flag as no bake was initiated
+		if _pending_nav_bake_request: call_deferred("request_nav_bake") # Process pending if any
 
-func _on_navigation_bake_finished():
-	print_debug("NavigationServer2D: Bake finished.")
-	if is_instance_valid(nav_region) and is_instance_valid(nav_region.navigation_polygon):
-		if nav_region.navigation_polygon.get_vertex_count() > 0:
-			print_debug("Baked polygon has %d vertices." % nav_region.navigation_polygon.get_vertex_count())
-		else:
-			printerr("Navigation baking resulted in 0 vertices after callback. Check outlines and geometry data.")
+
+func _on_navigation_bake_finished(baked_poly: NavigationPolygon): # Argument is the temp polygon that was baked
+	print_debug("NavigationServer2D: Bake finished for temp polygon: %s." % baked_poly)
+	_is_baking_navmesh = false # Allow new bakes
+
+	if not is_instance_valid(nav_region):
+		printerr("NavRegion is not valid when bake finished.")
+		if _pending_nav_bake_request: call_deferred("request_nav_bake")
+		return
+
+	if not is_instance_valid(baked_poly):
+		printerr("The baked polygon resource itself is not valid after callback.")
+		if _pending_nav_bake_request: call_deferred("request_nav_bake")
+		return
+
+	if baked_poly.get_vertices().size() > 0:
+		print_debug("Baked polygon %s has %d vertices. Assigning to NavRegion." % [baked_poly, baked_poly.get_vertices().size()])
+		nav_region.navigation_polygon = baked_poly # Assign the SUCCESSFULLY baked polygon
 	else:
-		printerr("Navigation bake finished, but nav_region or its polygon is not valid.")
+		printerr("Navigation baking resulted in 0 vertices for polygon %s. Not assigning." % baked_poly)
+		# Optionally, clear the nav_region's polygon if the current one is this failed one
+		if nav_region.navigation_polygon == baked_poly:
+			nav_region.navigation_polygon = null
+	
+	# If there was a request while this bake was happening, process it now.
+	if _pending_nav_bake_request:
+		call_deferred("request_nav_bake")
 
 
 func _spawn_player_at_entrance():
 	if not player_scene: print("Player scene not set."); return
 	var pi=player_scene.instantiate()
-	var wx=entrance_matrix_pos.x*cell_size.x+maze_offset.x+cell_size.x/2.0
-	var wy=entrance_matrix_pos.y*cell_size.y+maze_offset.y+cell_size.y/2.0
+	var wx=entrance_matrix_pos.x*cell_size.x+maze_offset.x
+	var wy=entrance_matrix_pos.y*cell_size.y+maze_offset.y
 	pi.global_position=Vector2(wx,wy); pi.add_to_group("player"); self.player_node=pi
 	if get_parent(): get_parent().call_deferred("add_child",pi) 
 	else: call_deferred("add_child",pi)
@@ -259,7 +303,7 @@ func _spawn_enemy():
 		return
 	
 	var ei=enemy_scene.instantiate()
-
+	audio_stream = ei.get_node_or_null("sfx_enemy")
 	if not is_instance_valid(player_node):
 		printerr("Cannot spawn enemy: Player node is not valid (was it spawned and added to tree via call_deferred?).")
 		if is_instance_valid(ei): ei.queue_free() 
@@ -277,8 +321,8 @@ func _spawn_enemy():
 		   maze_matrix[ey_grid][ex_grid] == 0 and \
 		   Vector2i(ex_grid, ey_grid) != entrance_matrix_pos and \
 		   Vector2i(ex_grid, ey_grid) != exit_matrix_pos:
-			var ex_world = ex_grid*cell_size.x+maze_offset.x+cell_size.x/2.0
-			var ey_world = ey_grid*cell_size.y+maze_offset.y+cell_size.y/2.0
+			var ex_world = ex_grid*cell_size.x+maze_offset.x
+			var ey_world = ey_grid*cell_size.y+maze_offset.y
 			ei.global_position = Vector2(ex_world, ey_world); spawned = true
 		spawn_attempts += 1
 	if not spawned: 
@@ -317,9 +361,6 @@ func _process(delta: float):
 		else: return
 
 	var player_pos = player_node.global_position
-	var player_is_moving = false
-	if player_node.has_method("is_player_moving"):
-		player_is_moving = player_node.is_player_moving()
 
 	var i = proximity_lights_data.size() - 1
 	while i >= 0:
@@ -333,13 +374,12 @@ func _process(delta: float):
 		var is_in_range = (distance_to_target <= proximity_activation_distance)
 		var light_should_be_enabled = false
 		if is_in_range:
-			if player_is_moving: light_should_be_enabled = true
-			else: 
-				var exclude_list = [player_node.get_rid() if player_node else null]
-				var occluded = _is_occluded(player_pos, target_pos, exclude_list) 
-				light_should_be_enabled = not occluded
+			var exclude_list = [player_node.get_rid() if player_node else null]
+			var occluded = _is_occluded(player_pos, target_pos, exclude_list) 
+			light_should_be_enabled = not occluded
 		if light.enabled != light_should_be_enabled: light.enabled = light_should_be_enabled
 		i -= 1
+
 
 	var j = proximity_enemies_data.size() - 1
 	while j >= 0:
@@ -352,25 +392,35 @@ func _process(delta: float):
 		var distance_to_enemy = player_pos.distance_to(enemy_pos)
 		var is_in_range = (distance_to_enemy <= proximity_enemy_activation_distance)
 		var enemy_should_be_visible = false 
+		#$sfx_enemy.play()
 		
 		var enemy_is_moving = false
 		if enemy.has_method("is_enemy_moving"):
 			enemy_is_moving = enemy.is_enemy_moving()
 
 		if is_in_range:
-			if player_is_moving or enemy_is_moving: 
+			if enemy_is_moving: 
 				enemy_should_be_visible = true
-			else: 
+			else:
 				var exclude_list = [player_node.get_rid() if player_node else null]
 				if enemy is CollisionObject2D: exclude_list.append(enemy.get_rid())
 				var occluded = _is_occluded(player_pos, enemy_pos, exclude_list)
 				enemy_should_be_visible = not occluded
 		
 		if enemy.visible != enemy_should_be_visible:
-			enemy.visible = enemy_should_be_visible
+			enemy.visible = enemy_should_be_visible				
 			var enemy_light = enemy.get_node_or_null("enemy_light") 
 			if enemy_light is Light2D:
 				enemy_light.enabled = enemy_should_be_visible
+				
+		if audio_stream.playing != enemy_should_be_visible:
+			audio_stream.playing = enemy_should_be_visible
+			if enemy_should_be_visible:
+				audio_stream.volume_db += 3 *(proximity_enemy_activation_distance / player_pos.distance_to(enemy_pos))
+			else:
+				audio_stream.volume_db -= 3 *(proximity_enemy_activation_distance / player_pos.distance_to(enemy_pos))
+				
+			#print(proximity_enemy_activation_distance / player_pos.distance_to(enemy_pos))
 		j -= 1
 
 func modify_random_walls():
@@ -394,13 +444,13 @@ func modify_random_walls():
 		if not is_inside_tree(): return
 		var act_type = randi()%2
 		if act_type==0 and not mod_walls.is_empty():var cp=mod_walls.pop_at(randi()%mod_walls.size());_remove_wall_at(cp);mod_paths.append(cp)
-		elif act_type==1 and not mod_paths.is_empty():
-			var cp=mod_paths.pop_at(randi()%mod_paths.size());await _warn_and_add_wall_at(cp)
-			if not is_inside_tree():return;mod_walls.append(cp) 
+		#elif act_type==1 and not mod_paths.is_empty():
+			#var cp=mod_paths.pop_at(randi()%mod_paths.size());await _warn_and_add_wall_at(cp)
+			#if not is_inside_tree():return;mod_walls.append(cp) 
 		elif not mod_walls.is_empty():
 			var cp=mod_walls.pop_at(randi()%mod_walls.size());_remove_wall_at(cp);mod_paths.append(cp)
-		elif not mod_paths.is_empty():
-			var cp=mod_paths.pop_at(randi()%mod_paths.size());await _warn_and_add_wall_at(cp)
+		#elif not mod_paths.is_empty():
+			#var cp=mod_paths.pop_at(randi()%mod_paths.size());await _warn_and_add_wall_at(cp)
 			if not is_inside_tree():return;mod_walls.append(cp) 
 		else:break
 	if is_inside_tree() and is_instance_valid(main_mod_timer) and main_mod_timer is Timer:main_mod_timer.start()
@@ -423,7 +473,7 @@ func _remove_wall_at(matrix_pos: Vector2i):
 		
 		# After removing a wall, the navigation mesh needs to be rebaked
 		if is_instance_valid(nav_region):
-			call_deferred("_generate_and_bake_navigation_polygon_impl") # Defer baking
+			request_nav_bake() # Defer baking
 
 func _warn_and_add_wall_at(matrix_pos: Vector2i) -> void:
 	if not is_inside_tree(): return
@@ -452,12 +502,11 @@ func _warn_and_add_wall_at(matrix_pos: Vector2i) -> void:
 			if wall_i.is_in_group("proximity_light_wall"):_initialize_proximity_lights()
 		
 		if is_instance_valid(nav_region):
-			call_deferred("_generate_and_bake_navigation_polygon_impl") # Defer baking
+			request_nav_bake() # Defer baking
 
 func _ready():
 	randomize()
 	_setup_navigation_region() 
-	
 	generate_and_draw() # This now handles initial spawn and nav bake
 	
 	# Timer setup is now primarily managed within generate_and_draw to ensure
@@ -477,20 +526,19 @@ func _ready():
 func generate_and_draw():
 	_generate_maze_matrix()
 	_draw_maze() 
-	
 	# Bake navigation AFTER the maze visuals are set.
 	# Use call_deferred to ensure nav_region is in tree if added deferred.
 	if is_instance_valid(nav_region):
-		call_deferred("_generate_and_bake_navigation_polygon_impl") 
+		request_nav_bake() 
 	elif has_node("NavRegion"): # Attempt to get it if it was added by _setup_navigation_region
 		nav_region = get_node("NavRegion")
 		if is_instance_valid(nav_region):
-			call_deferred("_generate_and_bake_navigation_polygon_impl")
+			request_nav_bake()
 	else: # Try getting from parent if it was added there
 		var parent_nav_region = get_parent().get_node_or_null("NavRegion") if get_parent() else null
 		if is_instance_valid(parent_nav_region):
 			nav_region = parent_nav_region
-			call_deferred("_generate_and_bake_navigation_polygon_impl")
+			request_nav_bake()
 		else:
 			printerr("generate_and_draw: NavigationRegion2D not found for baking.")
 

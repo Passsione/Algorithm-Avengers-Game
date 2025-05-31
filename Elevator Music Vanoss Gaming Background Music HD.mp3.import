@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dpcfggmkecjcp"
+path="res://.godot/imported/Elevator Music Vanoss Gaming Background Music HD.mp3-79a0f1058c9e976eed40a6250faa6c94.mp3str"
+
+[deps]
+
+source_file="res://Elevator Music Vanoss Gaming Background Music HD.mp3"
+dest_files=["res://.godot/imported/Elevator Music Vanoss Gaming Background Music HD.mp3-79a0f1058c9e976eed40a6250faa6c94.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

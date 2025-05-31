@@ -1,0 +1,121 @@
+[gd_scene load_steps=6 format=3 uid="uid://d0o7l15unxq3f"]
+
+[ext_resource type="Script" uid="uid://cd71t6wylma2x" path="res://start_menu.gd" id="1_jwbto"]
+[ext_resource type="AudioStream" uid="uid://cmkrg6bbwctq1" path="res://wonderous-world-163590.mp3" id="2_ia0g5"]
+[ext_resource type="Texture2D" uid="uid://dr6tyoq63fkx8" path="res://WhatsApp Image 2025-05-30 at 22.19.44_c0dd6e13.jpg" id="2_v2mkm"]
+[ext_resource type="FontFile" uid="uid://cx7xibk38i51" path="res://Advertising Pulp.ttf" id="3_ctwoq"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ppfnh"]
+texture = ExtResource("2_v2mkm")
+modulate_color = Color(0.47788, 0.47788, 0.47788, 1)
+
+[node name="StartMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jwbto")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_ppfnh")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_bottom = 0.0319824
+grow_horizontal = 2
+
+[node name="GameTitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.336608, 0.336608, 0.336608, 1)
+theme_override_colors/font_shadow_color = Color(0.65834, 0.65834, 0.65834, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_ctwoq")
+theme_override_font_sizes/font_size = 150
+text = "The Maze Race"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label" type="Label" parent="GameTitle"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -10.0
+offset_right = 203.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.340339, 0.340339, 0.340339, 1)
+theme_override_colors/font_shadow_color = Color(0.621524, 0.621524, 0.621524, 1)
+theme_override_fonts/font = ExtResource("3_ctwoq")
+theme_override_font_sizes/font_size = 50
+text = "Find the magic mushrooms before your opponent does"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -74.0
+offset_right = 12.0
+offset_bottom = 62.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+theme_override_constants/separation = 8
+
+[node name="Level1" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_ctwoq")
+theme_override_font_sizes/font_size = 25
+text = "Start Game
+"
+
+[node name="Level2" type="Button" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Level 2
+"
+
+[node name="Leaderborad" type="Button" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Leaderboard"
+
+[node name="Quit" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_ctwoq")
+theme_override_font_sizes/font_size = 25
+text = "Quit Game
+"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_ia0g5")
+volume_db = -8.914
+autoplay = true
+
+[connection signal="pressed" from="VBoxContainer/Level1" to="." method="_on_level_1_pressed"]
+[connection signal="pressed" from="VBoxContainer/Level2" to="." method="_on_level_2_pressed"]
+[connection signal="pressed" from="VBoxContainer/Leaderborad" to="." method="_on_leaderborad_pressed"]
+[connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]
