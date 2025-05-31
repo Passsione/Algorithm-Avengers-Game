@@ -268,7 +268,6 @@ func update_pathfinding_graph() -> void:
 
 	print("Enemy A* graph populated with ", _a_star.get_point_count(), " points.")
 
-# In enemy.gd
 
 func calculate_new_path(current_pos_tile: Vector2i) -> void:
 	_current_path_world.clear()

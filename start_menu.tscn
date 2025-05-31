@@ -92,17 +92,6 @@ theme_override_font_sizes/font_size = 25
 text = "Start Game
 "
 
-[node name="Level2" type="Button" parent="VBoxContainer"]
-visible = false
-layout_mode = 2
-text = "Level 2
-"
-
-[node name="Leaderborad" type="Button" parent="VBoxContainer"]
-visible = false
-layout_mode = 2
-text = "Leaderboard"
-
 [node name="Quit" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_ctwoq")
@@ -116,6 +105,4 @@ volume_db = -8.914
 autoplay = true
 
 [connection signal="pressed" from="VBoxContainer/Level1" to="." method="_on_level_1_pressed"]
-[connection signal="pressed" from="VBoxContainer/Level2" to="." method="_on_level_2_pressed"]
-[connection signal="pressed" from="VBoxContainer/Leaderborad" to="." method="_on_leaderborad_pressed"]
 [connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]

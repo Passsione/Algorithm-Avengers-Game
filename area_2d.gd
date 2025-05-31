@@ -57,12 +57,6 @@ func _on_body_entered(body: Node2D) -> void:
 
 		camera.add_child(game_over_label) # Add the game over label to the scene
 
-		# You might want to stop the player's movement or hide them here as well
-		# For example, if your player node is named "Player" and it's a child of this Node2D:
-		# var player_node = get_node_or_null("Player")
-		# if player_node:
-		#     player_node.hide() # Hide the player character visually
-			 #player_node.set_process(false) # Stop its _process updates
 		set_physics_process(false) # Stop its _physics_process updates
 
 		# Set a timer to wait for 3 seconds, then remove the label and quit the game

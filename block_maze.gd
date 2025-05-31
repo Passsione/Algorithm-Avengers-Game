@@ -530,6 +530,8 @@ func handle_wall_shifts(delta: float):
 		wall_shift_timer = 0.0
 		# Adjust interval for wall shifts, faster with higher difficulty
 		wall_shift_interval = max(4.0, 8.0 - (difficulty_level * 0.5))
+		
+
 # Timer Display Functions
 func setup_timer_display():
 	if timer_display_label == null or not is_instance_valid(timer_display_label):
